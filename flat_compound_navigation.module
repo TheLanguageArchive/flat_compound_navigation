@@ -1,0 +1,66 @@
+<?php
+use TLA\FLAT\CompoundNavigation\NavigationService;
+
+module_load_include('inc', 'flat_compound_navigation', 'includes/backend');
+module_load_include('inc', 'flat_compound_navigation', 'includes/navigation');
+
+function flat_compound_navigation_theme() {
+
+    return [
+
+        'flat_compound_navigation_sidebar' => [
+            'template' => 'theme/flat-compound-navigation-sidebar',
+        ],
+    ];
+}
+
+function flat_compound_navigation_block_info() {
+
+    return [
+
+        'flat_compound_navigation' => [
+
+            'info'       => 'FLAT Compound Navigation',
+            'pages'      => 'islandora/object/*',
+            'cache'      => DRUPAL_NO_CACHE,
+            'visibility' => BLOCK_VISIBILITY_LISTED,
+        ],
+    ];
+}
+
+function flat_compound_navigation_block_view($delta = '') {
+
+    $block = [];
+
+    switch ($delta) {
+
+      case 'flat_compound_navigation':
+
+        $block['subject'] = null;
+        $block['content'] = flat_compound_navigation_sidebar_block();
+
+        break;
+    }
+
+    return $block;
+  }
+
+function flat_compound_navigation_sidebar_block() {
+
+    if (false === (arg(0) === 'islandora' && arg(1) === 'object' && arg(2))) {
+
+        // not on object view page
+        return [];
+    }
+
+    $navigation = new NavigationService();
+    $data       = $navigation->fetch(arg(2));
+
+    if (empty($data)) {
+        return [];
+    }
+
+    return [
+        '#markup' => theme('flat_compound_navigation_sidebar', $data),
+    ];
+}
