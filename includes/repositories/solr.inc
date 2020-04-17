@@ -60,7 +60,8 @@ class Solr
 
                 'pid'   => $row['PID'],
                 'label' => $row['fgs_label_s'],
-                'roles' => $row['policy_datastream_roles_ms'],
+                // compound does not have roles indexed
+                'roles' => $row['policy_datastream_roles_ms'] ?? [],
             ];
         }
 
@@ -106,12 +107,12 @@ class Solr
 
         $params = [
 
-            'fq' => [
+            'sort' => 'fgs_label_ss asc',
+            'fl'   => 'PID, fgs_label_s, policy_datastream_roles_ms',
+            'fq'   => [
                 format_string('({!terms f=PID}!pid)', ['!pid' => implode(',', $pids)]),
             ],
         ];
-
-        $params['fl'] = 'PID, fgs_label_s, policy_datastream_roles_ms';
 
         return $params;
     }
