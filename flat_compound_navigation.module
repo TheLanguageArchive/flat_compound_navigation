@@ -60,6 +60,8 @@ function flat_compound_navigation_sidebar_block() {
         return [];
     }
 
+    drupal_add_css(drupal_get_path('module', 'flat_compound_navigation') . '/css/flat-compound-navigation-sidebar.css');
+
     return [
         '#markup' => theme('flat_compound_navigation_sidebar', $data),
     ];
