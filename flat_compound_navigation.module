@@ -56,7 +56,9 @@ function flat_compound_navigation_sidebar_block() {
     $navigation = new NavigationService();
     $data       = $navigation->fetch(arg(2));
 
-    if (empty($data)) {
+    if (false === $data) {
+
+        // no data found
         return [];
     }
 

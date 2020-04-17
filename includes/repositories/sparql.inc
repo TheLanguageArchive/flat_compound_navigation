@@ -72,7 +72,7 @@ class Sparql
         if (count($results) === 0) {
 
             // no children found
-            return [];
+            return false;
         }
 
         return array_column(array_column($results, 'child'), 'value');

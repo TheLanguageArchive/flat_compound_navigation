@@ -41,14 +41,19 @@ class NavigationService
      *
      * @return array
      */
-    public function fetch(string $pid): array
+    public function fetch(string $pid)
     {
         $parent = $this->sparql->parent($pid);
-
         $pids   = $this->sparql->children($parent);
-        $pids[] = $parent;
 
-        $data = $this->solr->fetch($pids) ?: [];
+        if (false === $pids) {
+
+            // no children found
+            return false;
+        }
+
+        $pids[] = $parent;
+        $data   = $this->solr->fetch($pids);
 
         return $this->normalize($pid, $parent, $data);
     }
@@ -59,12 +64,12 @@ class NavigationService
      * @param string $parent
      * @param array  $data
      *
-     * @return array
+     * @return array|false
      */
-    private function normalize(string $pid, string $parent, array $data): array
+    private function normalize(string $pid, string $parent, array $data)
     {
         if (!isset($data['results'][$parent])) {
-            return [];
+            return false;
         }
 
         // determining prev/next by copying raw data

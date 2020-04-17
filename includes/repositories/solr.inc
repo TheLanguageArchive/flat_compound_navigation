@@ -40,13 +40,15 @@ class Solr
      * Fetching navigation data from solr
      *
      * @param array $pids
+     *
+     * @return array|false
      */
     public function fetch(array $pids)
     {
         $params = $this->params($pids);
         $data   = $this->query($params);
 
-        if (false === $data) {
+        if (false === $data || $data['response']['numFound'] === 0) {
             return false;
         }
 
