@@ -67,6 +67,24 @@ class NavigationService
             return false;
         }
 
+        global $user;
+
+        foreach ($data['results'] as $id => $row) {
+
+            // $user->roles is indexed by role id
+            $allowed = array_intersect($row['roles'], array_values($user->roles));
+            if (count($allowed) > 0) {
+
+                // user has role that allows viewing OBJ
+                $data['results'][$id]['allowed'] = true;
+
+            } elseif (in_array($user->name, $row['users'])) {
+
+                // user is allowed to view OBJ
+                $data['results'][$id]['allowed'] = true;
+            }
+        }
+
         // determining prev/next by copying raw data
         $indexed = $data['results'];
 

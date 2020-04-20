@@ -48,7 +48,7 @@ class Solr
         $params = $this->params($parent);
         $data   = $this->query($params);
 
-        if (false === $data || $data['response']['numFound'] === 0) {
+        if (false === $data || $data['response']['numFound'] <= 1) {
             return false;
         }
 
@@ -58,10 +58,14 @@ class Solr
 
             $results[$row['PID']] = [
 
-                'pid'   => $row['PID'],
-                'label' => $row['fgs_label_s'],
-                // compound does not have roles indexed
-                'roles' => $row['policy_datastream_roles_ms'] ?? [],
+                'pid'     => $row['PID'],
+                'label'   => $row['fgs_label_s'],
+                // this flag determines whether current user can see OBJ datastream
+                'allowed' => false,
+                // compound does not have roles, users indexed
+                'roles'   => $row['policy_datastream_roles_ms'] ?? [],
+                'users'   => $row['policy_datastream_users_ms'] ?? [],
+
             ];
         }
 
@@ -108,7 +112,7 @@ class Solr
         $params = [
 
             'sort' => 'fgs_label_ss asc',
-            'fl'   => 'PID, fgs_label_s, policy_datastream_roles_ms',
+            'fl'   => 'PID, fgs_label_s, policy_datastream_roles_ms, policy_datastream_users_ms',
             'fq'   => [
                 format_string('({!terms f=RELS_EXT_isConstituentOf_uri_ms}!parent) OR ({!terms f=PID}!pid)', ['!parent' => ('info:fedora/' . $parent), '!pid' => $parent]),
             ],
