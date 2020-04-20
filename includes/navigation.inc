@@ -55,6 +55,10 @@ class NavigationService
         $pids[] = $parent;
         $data   = $this->solr->fetch($pids);
 
+        if (false === $data) {
+            return false;
+        }
+
         return $this->normalize($pid, $parent, $data);
     }
 
