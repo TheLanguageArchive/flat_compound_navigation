@@ -43,9 +43,9 @@ class Solr
      *
      * @return array|false
      */
-    public function fetch(array $pids)
+    public function fetch(string $parent)
     {
-        $params = $this->params($pids);
+        $params = $this->params($parent);
         $data   = $this->query($params);
 
         if (false === $data || $data['response']['numFound'] === 0) {
@@ -97,11 +97,11 @@ class Solr
     /**
      * Preparing params
      *
-     * @param array $pids
+     * @param string $parent
      *
      * @return array
      */
-    private function params(array $pids): array
+    private function params(string $parent): array
     {
         global $user;
 
@@ -110,7 +110,7 @@ class Solr
             'sort' => 'fgs_label_ss asc',
             'fl'   => 'PID, fgs_label_s, policy_datastream_roles_ms',
             'fq'   => [
-                format_string('({!terms f=PID}!pid)', ['!pid' => implode(',', $pids)]),
+                format_string('({!terms f=RELS_EXT_isConstituentOf_uri_ms}!parent) OR ({!terms f=PID}!pid)', ['!parent' => ('info:fedora/' . $parent), '!pid' => $parent]),
             ],
         ];
 

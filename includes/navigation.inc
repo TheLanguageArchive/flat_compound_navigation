@@ -44,16 +44,7 @@ class NavigationService
     public function fetch(string $pid)
     {
         $parent = $this->sparql->parent($pid);
-        $pids   = $this->sparql->children($parent);
-
-        if (false === $pids) {
-
-            // no children found
-            return false;
-        }
-
-        $pids[] = $parent;
-        $data   = $this->solr->fetch($pids);
+        $data   = $this->solr->fetch($parent);
 
         if (false === $data) {
             return false;
