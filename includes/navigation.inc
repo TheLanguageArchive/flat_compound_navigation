@@ -4,6 +4,9 @@ namespace TLA\FLAT\CompoundNavigation;
 use TLA\FLAT\CompoundNavigation\Repository\Sparql;
 use TLA\FLAT\CompoundNavigation\Repository\Solr;
 
+use function islandora_object_load;
+use function islandora_object_manage_access_callback;
+
 module_load_include('inc', 'flat_compound_navigation', 'includes/repositories/sparql');
 module_load_include('inc', 'flat_compound_navigation', 'includes/repositories/solr');
 
@@ -98,11 +101,17 @@ class NavigationService
         $previous = $children[$current - 1] ?? false;
         $next     = $children[$current + 1] ?? false;
 
+        // checking parent access
+        $object = islandora_object_load($parent);
+        $manage = islandora_object_manage_access_callback([
+            ISLANDORA_METADATA_EDIT, ISLANDORA_MANAGE_PROPERTIES, ISLANDORA_ADD_DS
+        ], $object);
+
         return [
 
             'label'    => $data['results'][$parent]['label'],
             'count'    => $data['count'] - 1, // removing parent from count
-            'uri'      => url('islandora/object/' . $parent . '/manage'),
+            'uri'      => true === $manage ? url('islandora/object/' . $parent . '/manage') : false,
             'active'   => $pid,
             'previous' => $previous,
             'next'     => $next,
