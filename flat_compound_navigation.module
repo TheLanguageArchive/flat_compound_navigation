@@ -63,8 +63,24 @@ function flat_compound_navigation_sidebar_block() {
     }
 
     drupal_add_css(drupal_get_path('module', 'flat_compound_navigation') . '/css/flat-compound-navigation-sidebar.css');
+    flat_lazy_load_images_assets();
 
     return [
         '#markup' => theme('flat_compound_navigation_sidebar', $data),
     ];
+}
+
+function flat_compound_navigation_image_tag($image, $active) {
+
+    $attributes = [
+
+        'data-src'                  => url('islandora/object/' . $image['pid'] . '/datastream/TN/view'),
+        'data-flat-lazy-load-image' => true,
+    ];
+
+    if ($active === $image['pid']) {
+        $attributes['class'] = 'active';
+    }
+
+    return '<img' . drupal_attributes($attributes) . ' />';
 }

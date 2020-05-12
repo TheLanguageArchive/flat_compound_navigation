@@ -34,14 +34,9 @@
    <div class="islandora-compound-thumbs">
    <?php foreach ($children as $child): ?>
      <div class="islandora-compound-thumb">
-     <span class='islandora-compound-caption'><?php print $child['label'];?></span>
+     <span class="islandora-compound-caption"><?php print $child['label'];?></span>
      <?php print l(
-       theme_image(
-         array(
-           'path' => url('islandora/object/' . $child['pid'] . '/datastream/TN/view'),
-           'attributes' =>  $active === $child['pid'] ? ['class' => 'active'] : [],
-         )
-       ),
+       flat_compound_navigation_image_tag($child, $active),
        'islandora/object/' . $child['pid'],
        array('html' => TRUE, 'query' => $query_params)
      );?>
