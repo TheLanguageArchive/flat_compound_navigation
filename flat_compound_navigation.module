@@ -75,6 +75,7 @@ function flat_compound_navigation_image_tag($image, $active) {
     $attributes = [
 
         'data-src'                  => url('islandora/object/' . $image['pid'] . '/datastream/TN/view'),
+        'data-loaded'               => 0,
         'data-flat-lazy-load-image' => true,
     ];
 
