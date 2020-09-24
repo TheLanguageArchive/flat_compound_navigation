@@ -114,9 +114,44 @@ class Solr
             'sort' => 'fgs_label_ss asc',
             'fl'   => 'PID, fgs_label_s, policy_datastream_roles_ms, policy_datastream_users_ms',
             'fq'   => [
-                format_string('({!terms f=RELS_EXT_isConstituentOf_uri_ms}!parent) OR ({!terms f=PID}!pid)', ['!parent' => ('info:fedora/' . $parent), '!pid' => $parent]),
+
+                format_string('(({!terms f=RELS_EXT_isConstituentOf_uri_ms}!parent) OR ({!terms f=PID}!pid))', ['!parent' => ('info:fedora/' . $parent), '!pid' => $parent]),
+                'AND',
             ],
         ];
+
+        $fqExt = format_string('
+
+            (
+                RELS_EXT_isViewableByUser_literal_ms:"!username"
+                OR
+                ((*:* -RELS_EXT_isViewableByUser_literal_ms:[* TO *]) AND (*:* -RELS_EXT_isViewableByRole_literal_ms:[* TO *]))
+
+        ', ['!username' => $user->name]);
+
+        foreach ($user->roles as $role) {
+            $fqExt .= ' OR RELS_EXT_isViewableByRole_literal_ms:"' . $role . '" ';
+        }
+
+        $fqExt .= ')';
+
+        $fqInt = format_string('
+
+            (
+                RELS_INT_isViewableByUser_literal_ms:"!username"
+                OR
+                ((*:* -RELS_INT_isViewableByUser_literal_ms:[* TO *]) AND (*:* -RELS_INT_isViewableByRole_literal_ms:[* TO *]))
+
+        ', ['!username' => $user->name]);
+
+        foreach ($user->roles as $role) {
+            $fqInt .= ' OR RELS_INT_isViewableByRole_literal_ms:"' . $role . '" ';
+        }
+
+        $fqInt         .= ')';
+        $params['fq'][] = '(' . $fqExt . ' OR ' . $fqInt . ')';
+
+        $params['fq'] = implode(' ', $params['fq']);
 
         return $params;
     }
